@@ -1,8 +1,9 @@
 import sqlite3
 from datetime import datetime
 import pandas as pd
+import os
 
-DB_PATH = "life_portfolio.db"
+DB_PATH = os.path.join(os.path.dirname(__file__), "life_portfolio.db")
 
 def create_table():
     """Create the life_portfolio table if it doesn't exist."""

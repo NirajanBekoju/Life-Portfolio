@@ -1,17 +1,20 @@
 import streamlit as st
 import pandas as pd 
 import db_handler
-from life_portfolio_utils import life_portfolio_df
+from utils import initialize_portfolio_data
+st.set_page_config(page_title="Life Portfolio", layout="wide")
 
 email = 'nirajan.bekoju@gmail.com'
+life_portfolio_df, last_created_date = initialize_portfolio_data(email)
 
-st.set_page_config(page_title="Life Portfolio", layout="wide")
 
 # Ensure table exists
 db_handler.create_table()
 
 st.title('Life Portfolio')
 st.markdown('Fill in Importance Level, Satisfaction level, Average Hours spent in each SLUs per week')
+
+st.markdown(f'**Last Submission Date : {last_created_date}**')
 
 # Calculate dynamic height
 row_height = 35
@@ -20,7 +23,7 @@ table_height = row_height * len(life_portfolio_df) + 50  # extra for header
 edited_life_portfolio_df = st.data_editor(
     life_portfolio_df, 
     num_rows='fixed',
-    use_container_width=True,
+    width="stretch",
     height=table_height,
     hide_index=True,
     column_config={
@@ -49,13 +52,14 @@ edited_life_portfolio_df = st.data_editor(
     disabled=['Strategic Life Areas(SLAs)', 'Strategic Life Units (SLUs)'],
 )
 
-
+confirm_save = st.checkbox("I confirm I want to save this table")
 ## save button
-if st.button('Save'):
-    success = db_handler.save_dataframe(edited_life_portfolio_df, email)
-    if success:
-        st.success('Your table has been saved successfully')
-    else:
-        st.warning('Not Successful!')
+if confirm_save:
+    if st.button('Save'):
+        success = db_handler.save_dataframe(edited_life_portfolio_df, email)
+        if success:
+            st.success('Your table has been saved successfully')
+        else:
+            st.warning('Not Successful!')
     
 

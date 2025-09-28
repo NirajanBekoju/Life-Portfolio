@@ -36,3 +36,18 @@ def save_dataframe(df: pd.DataFrame, email: str):
     conn.commit()
     conn.close()
     return True
+
+def get_latest_data(email: str) -> pd.DataFrame:
+    conn = sqlite3.connect(DB_PATH)
+    query = """
+    SELECT * FROM life_portfolio WHERE Email = ?
+    AND Created_Date = (
+        SELECT MAX(Created_Date)
+        FROM life_portfolio
+        WHERE Email = ?
+    )
+    """
+
+    df = pd.read_sql_query(query, conn, params = (email, email))
+    conn.close()
+    return df 

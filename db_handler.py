@@ -1,0 +1,38 @@
+import sqlite3
+from datetime import datetime
+import pandas as pd
+
+DB_PATH = "life_portfolio.db"
+
+def create_table():
+    """Create the life_portfolio table if it doesn't exist."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS life_portfolio (
+        `Strategic Life Areas(SLAs)` TEXT,
+        `Strategic Life Units (SLUs)` TEXT,
+        `Importance Level` INTEGER,
+        `Satisfaction Level` INTEGER,
+        `Average Hours Spent in Week` INTEGER,
+        Email TEXT,
+        Created_Date DATETIME
+    )
+    """)
+    conn.commit()
+    conn.close()
+
+def save_dataframe(df: pd.DataFrame, email: str):
+    """Save the DataFrame to SQLite, adding email and timestamp."""
+    if df.empty:
+        return False
+    
+    df_copy = df.copy()
+    df_copy["Email"] = email
+    df_copy["Created_Date"] = datetime.now()
+
+    conn = sqlite3.connect(DB_PATH)
+    df_copy.to_sql("life_portfolio", conn, if_exists="append", index=False)
+    conn.commit()
+    conn.close()
+    return True

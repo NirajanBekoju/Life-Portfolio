@@ -1,7 +1,7 @@
 import pandas as pd 
 import random
 import plotly.express as px
-from db_handler import get_latest_data
+from db_handler import get_latest_portfolio_data
 
 life_portfolio_columns = ['Strategic Life Areas(SLAs)', 'Strategic Life Units (SLUs)', 'Importance Level', 'Satisfaction Level', 'Average Hours Spent in Week']
 
@@ -37,7 +37,7 @@ SLA_SLU_dict = {
 }
 
 def initialize_portfolio_data(email:str):
-    latest_portfolio_df = get_latest_data(email)
+    latest_portfolio_df = get_latest_portfolio_data(email)
     if not latest_portfolio_df.empty:
         last_created_date = latest_portfolio_df['Created_Date'].iloc[0]
         latest_portfolio_df = latest_portfolio_df.drop(['Email', 'Created_Date'], axis=1)

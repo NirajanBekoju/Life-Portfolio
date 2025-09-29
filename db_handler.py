@@ -38,7 +38,7 @@ def save_dataframe(df: pd.DataFrame, email: str):
     conn.close()
     return True
 
-def get_latest_data(email: str) -> pd.DataFrame:
+def get_latest_portfolio_data(email: str) -> pd.DataFrame:
     conn = sqlite3.connect(DB_PATH)
     query = """
     SELECT * FROM life_portfolio WHERE Email = ?
@@ -52,3 +52,28 @@ def get_latest_data(email: str) -> pd.DataFrame:
     df = pd.read_sql_query(query, conn, params = (email, email))
     conn.close()
     return df 
+
+def get_unique_submission_date(email: str):
+    conn = sqlite3.connect(DB_PATH)
+    query = """
+    SELECT DISTINCT Created_Date
+    FROM life_portfolio
+    WHERE Email = ?
+    ORDER BY Created_Date DESC
+    """
+    cursor = conn.cursor()
+    cursor.execute(query, (email,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [row[0] for row in rows]
+
+
+def get_specific_portfolio_data(email: str, date):
+    conn = sqlite3.connect(DB_PATH)
+    query = """
+    SELECT * FROM life_portfolio WHERE Email = ? and Created_Date = ?    
+    """
+    df = pd.read_sql_query(query, conn, params = (email, date))
+    conn.close()
+    return df

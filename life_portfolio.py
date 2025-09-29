@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd 
 import db_handler
 from utils import initialize_portfolio_data
 st.set_page_config(page_title="Life Portfolio", layout="wide")
@@ -10,9 +9,6 @@ db_handler.create_table()
 
 email = 'nirajan.bekoju@gmail.com'
 life_portfolio_df, last_created_date = initialize_portfolio_data(email)
-
-
-
 
 st.title('Life Portfolio')
 st.markdown('Fill in Importance Level, Satisfaction level, Average Hours spent in each SLUs per week')

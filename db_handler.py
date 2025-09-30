@@ -77,3 +77,17 @@ def get_specific_portfolio_data(email: str, date):
     df = pd.read_sql_query(query, conn, params = (email, date))
     conn.close()
     return df
+
+def delete_specific_portfolio_data(email: str, date):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    query = """
+    DELETE FROM life_portfolio WHERE Email = ? and Created_Date = ?    
+    """
+
+    cursor.execute(query, (email, date))
+    conn.commit()
+    deleted_rows = cursor.rowcount
+    conn.close()
+    return deleted_rows > 0

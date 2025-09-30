@@ -2,6 +2,7 @@ import pandas as pd
 import random
 import plotly.express as px
 from db_handler import get_latest_portfolio_data
+import streamlit as st
 
 life_portfolio_columns = ['Strategic Life Areas(SLAs)', 'Strategic Life Units (SLUs)', 'Importance Level', 'Satisfaction Level', 'Average Hours Spent in Week']
 
@@ -51,7 +52,26 @@ def initialize_portfolio_data(email:str):
     life_portfolio_df = pd.DataFrame(life_portfolio_data, columns = life_portfolio_columns)
     return life_portfolio_df, None
 
+def upload_portfolio_data_csv(label: str = "Upload your CSV file"):
+    """
+    Function to upload and read a CSV file in Streamlit.
 
+    Parameters:
+        label (str): The label shown on the upload widget.
+
+    Returns:
+        DataFrame or None: The uploaded CSV as a pandas DataFrame, or None if no file is uploaded.
+    """
+    uploaded_file = st.file_uploader(label, type=["csv"])
+    if uploaded_file is not None:
+        df = pd.read_csv(uploaded_file)
+        if df.shape == (16, 3) and df.columns.tolist() == ['Importance Level', 'Satisfaction Level', 'Average Hours Spent in Week']:
+            st.success("File uploaded successfully!")
+            return df
+        else:
+            st.warning('CSV Validation Failed: The dataframe should contains 16 rows and 3 correct columns.')
+    else:
+        return None
 
 def plot_life_portfolio(latest_portfolio_df, theme = 'dark'):
     """
@@ -62,7 +82,9 @@ def plot_life_portfolio(latest_portfolio_df, theme = 'dark'):
     """
 
 
-    life_portfolio_created_date = latest_portfolio_df['Created_Date'].iloc[0]
+    life_portfolio_created_date = pd.to_datetime(latest_portfolio_df['Created_Date'].iloc[0])
+    formatted_date = life_portfolio_created_date.strftime("%b %d, %Y")
+
 
     # Color mapping
     color_map = {
@@ -83,7 +105,7 @@ def plot_life_portfolio(latest_portfolio_df, theme = 'dark'):
         color="Strategic Life Areas(SLAs)",
         hover_name="Strategic Life Units (SLUs)",
         size_max=40,
-        title=f"Life Portfolio: Importance vs Satisfaction vs Time Spent <br>{life_portfolio_created_date}",
+        title=f"Life Portfolio: Importance vs Satisfaction vs Time Spent <br>{formatted_date}",
         color_discrete_map=color_map,
         text="Strategic Life Units (SLUs)",
     )

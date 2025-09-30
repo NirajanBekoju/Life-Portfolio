@@ -1,6 +1,6 @@
 import streamlit as st
 import db_handler
-from utils import initialize_portfolio_data
+from utils import initialize_portfolio_data, upload_portfolio_data_csv
 st.set_page_config(page_title="Life Portfolio", layout="wide")
 
 # Ensure table exists
@@ -10,9 +10,14 @@ db_handler.create_table()
 email = 'nirajan.bekoju@gmail.com'
 life_portfolio_df, last_created_date = initialize_portfolio_data(email)
 
+uploaded_csv_file = upload_portfolio_data_csv()
+if uploaded_csv_file is not None:
+    for col in ['Importance Level', 'Satisfaction Level', 'Average Hours Spent in Week']:
+        life_portfolio_df[col] = uploaded_csv_file[col]
+
+
 st.title('Life Portfolio')
 st.markdown('Fill in Importance Level, Satisfaction level, Average Hours spent in each SLUs per week')
-
 st.markdown(f'**Last Submission Date : {last_created_date}**')
 
 # Calculate dynamic height

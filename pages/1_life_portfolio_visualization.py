@@ -1,5 +1,5 @@
 import streamlit as st
-from db_handler import get_unique_submission_date, get_specific_portfolio_data
+from db_handler import get_unique_submission_date, get_specific_portfolio_data, delete_specific_portfolio_data
 from utils import plot_life_portfolio
 
 st.set_page_config(page_title="Life Portfolio", page_icon="📈")
@@ -11,6 +11,9 @@ submission_date_list = get_unique_submission_date(email = email)
 st.markdown("## Life Portfolio Visualization")
 ## select the submission dates
 selected_date = st.selectbox("Select submission date:", submission_date_list, index = 0)
+
+
+
 latest_portfolio_df = get_specific_portfolio_data(email = email, date = selected_date)
 
 if latest_portfolio_df is None or latest_portfolio_df.empty:
@@ -23,4 +26,10 @@ else:
     fig = plot_life_portfolio(latest_portfolio_df)
     st.plotly_chart(fig, use_container_width=False)
 
-
+### delete button
+if st.button('Delete Portfolio Entry'):
+    deleted = delete_specific_portfolio_data(email, selected_date)
+    if deleted:
+        st.success('Portfolio Data Deleted Successfully')
+    else:
+        st.warning('No matching entry found')
